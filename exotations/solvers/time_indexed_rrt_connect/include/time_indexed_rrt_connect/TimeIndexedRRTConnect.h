@@ -138,6 +138,8 @@ protected:
     std::string algorithm_;
 };
 
+typedef std::shared_ptr<exotica::TimeIndexedRRTConnect> TimeIndexedRRTConnect_ptr;
+
 using namespace ompl;
 class OMPLTimeIndexedRRTConnect : public base::Planner
 {
