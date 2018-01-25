@@ -11,14 +11,14 @@ if($ENV{ROS_DISTRO} MATCHES "(kinetic|lunar)")
   add_definitions(-DROS_KINETIC)
 endif()
 
+AddInitializer(TimeIndexedRRTConnect)
+GenInitializers()
+
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES time_indexed_rrt_connect
   CATKIN_DEPENDS exotica ompl
 )
-
-AddInitializer(TimeIndexedRRTConnect)
-GenInitializers()
 
 include_directories(
   include
