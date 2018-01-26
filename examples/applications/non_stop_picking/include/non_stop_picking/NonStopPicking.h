@@ -4,6 +4,7 @@
 #include <exotica/Exotica.h>
 #include <ik_solver/IKSolver.h>
 #include <time_indexed_rrt_connect/TimeIndexedRRTConnect.h>
+#include <boost/thread.hpp>
 
 using namespace exotica;
 struct CTState
@@ -44,10 +45,12 @@ public:
     NonStopPickingThreaded();
     ~NonStopPickingThreaded();
     bool initialise(const std::string &rrtconnect_filepath, const std::string &optimization_filepath, unsigned int num_threads = 1);
+    void setConstraint(Trajectory &cons, double start, double end);
     bool solve(const CTState &start, const CTState &goal, Eigen::MatrixXd &solution);
     void publishTrajectory(const Eigen::MatrixXd &solution);
 
 private:
     std::vector<NonStopPicking_ptr> NSPs_;
+    unsigned int num_threads_;
 };
 #endif

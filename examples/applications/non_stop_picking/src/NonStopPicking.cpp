@@ -121,8 +121,41 @@ bool NonStopPicking::solve(const CTState &start, const CTState &goal, Eigen::Mat
     return true;
 }
 
+NonStopPickingThreaded::NonStopPickingThreaded()
+{
+}
+
+NonStopPickingThreaded::~NonStopPickingThreaded()
+{
+}
+
 bool NonStopPickingThreaded::initialise(const std::string &rrtconnect_filepath, const std::string &optimization_filepath, unsigned int num_threads)
 {
+    num_threads_ = num_threads;
     NSPs_.resize(num_threads);
     for (int i = 0; i < num_threads; i++)
+    {
+        NSPs_[i].reset(new NonStopPicking());
+        NSPs_[i]->initialise(rrtconnect_filepath, optimization_filepath);
+    }
+}
+
+void NonStopPickingThreaded::setConstraint(Trajectory &cons, double start, double end)
+{
+    for (int i = 0; i < num_threads_; i++)
+        NSPs_[i]->setConstraint(cons, start, end);
+}
+
+bool NonStopPickingThreaded::solve(const CTState &start, const CTState &goal, Eigen::MatrixXd &solution)
+{
+    std::vector<Eigen::MatrixXd> solutions(num_threads_);
+    ros::Time start_time = ros::Time::now();
+    for (int i = 0; i < num_threads_; i++)
+    {
+        boost::thread t(std::bind(&NonStopPicking::solve, NSPs_[i], start, goal, solutions[i]));
+        t.join();
+    }
+    HIGHLIGHT("Duration " << ros::Duration(ros::Time::now() - start_time).toSec());
+    for (int i = 0; i < num_threads_; i++)
+        HIGHLIGHT("Thread " << i << " length " << solutions[i].size());
 }

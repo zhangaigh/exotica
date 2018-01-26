@@ -6,10 +6,10 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "NonStopPicking");
     Server::InitRos(std::shared_ptr<ros::NodeHandle>(new ros::NodeHandle("~")));
     NonStopPicking nsp;
-    nsp.initialise("/home/yiming/devel/exotica_ws/src/exotica/examples/applications/non_stop_picking/resources/time_indexed_rrt_connect.xml",
-                   "/home/yiming/devel/exotica_ws/src/exotica/examples/applications/non_stop_picking/resources/ik.xml");
 
-    Trajectory cons(loadFile("/home/yiming/devel/exotica_ws/src/exotica/examples/applications/non_stop_picking/resources/constraint.traj"));
+    nsp.initialise(parsePath("{non_stop_picking}/resources/time_indexed_rrt_connect.xml"), parsePath("{non_stop_picking}/resources/ik.xml"));
+
+    Trajectory cons(loadFile(parsePath("{non_stop_picking}/resources/constraint.traj")));
     nsp.setConstraint(cons, 4, 6);
     Eigen::MatrixXd solution;
     CTState start, goal;
