@@ -1,0 +1,13 @@
+<launch>
+
+  <arg name="debug" default="false" />
+  <arg unless="$(arg debug)" name="launch_prefix" value="" />
+  <arg     if="$(arg debug)" name="launch_prefix" value="xterm -e gdb --args python" />
+
+  <param name="robot_description" textfile="$(find non_stop_picking)/resources/panda/panda.urdf" />
+  <param name="robot_description_semantic" textfile="$(find non_stop_picking)/resources/panda/panda.srdf" />
+
+  <node launch-prefix="$(arg launch_prefix)" pkg="non_stop_picking" type="panda_time_indexed_rrt_connect.py" name="TimeIndexedSamplingPlannerPythonExampleNode" output="screen" />
+
+  <node name="rviz" pkg="rviz" type="rviz" respawn="false"	args="-d $(find exotica_examples)/resources/rviz.rviz" />
+</launch>

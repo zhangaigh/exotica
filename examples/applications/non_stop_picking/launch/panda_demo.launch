@@ -1,0 +1,17 @@
+<launch>
+
+  <arg name="debug" default="false" />
+  <arg unless="$(arg debug)" name="launch_prefix" value="" />
+  <arg     if="$(arg debug)" name="launch_prefix" value="xterm -e gdb --args" />
+
+  <param name="robot_description" textfile="$(find non_stop_picking)/resources/panda/panda.urdf" />
+  <param name="robot_description_semantic" textfile="$(find non_stop_picking)/resources/panda/panda.srdf" />
+
+  <node launch-prefix="$(arg launch_prefix)" pkg="non_stop_picking" type="non_stop_picking_node" name="NonStopPickingNode" output="screen">
+    <param name="RRTConnectConfigFile" type="string" value="$(find non_stop_picking)/resources/panda/time_indexed_rrt_connect.xml" />
+    <param name="OptimizationConfigFile" type="string" value="$(find non_stop_picking)/resources/panda/ik.xml" />
+    <param name="ConstraintFile" type="string" value="$(find non_stop_picking)/resources/panda/constraint.traj" />
+  </node>
+
+  <node name="rviz" pkg="rviz" type="rviz" respawn="false"	args="-d $(find exotica_examples)/resources/rviz.rviz" />
+</launch>

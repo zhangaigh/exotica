@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<PlannerDemoConfig>
+
+  <TimeIndexedRRTConnect Name="TimeIndexedRRTConnect">
+    <Timeout>5</Timeout>
+    <AddTimeIntoSolution>1</AddTimeIntoSolution>
+  </TimeIndexedRRTConnect>
+
+  <TimeIndexedSamplingProblem Name="TimeIndexedSamplingProblem">
+    <T>10</T>
+    <GoalTime>10</GoalTime>
+    <PlanningScene>
+      <Scene>
+        <JointGroup>arm</JointGroup>
+        <LoadScene>{non_stop_picking}/resources/panda/time_indexed_rrt_connect_demo.scene</LoadScene>
+        <Trajectories>
+          <Trajectory Link="Obstacle" File="{non_stop_picking}/resources/panda/moving_obstacle.traj" />
+        </Trajectories>
+        <CollisionScene>CollisionSceneFCLLatest</CollisionScene>
+        <AlwaysUpdateCollisionScene>0</AlwaysUpdateCollisionScene>
+      </Scene>
+    </PlanningScene>
+
+    <Maps>
+      <CollisionCheck Name="Collision" SelfCollision="1" />
+    </Maps>
+
+    <Constraint>
+      <Task Task="Collision"/>
+    </Constraint>
+
+    <StartState>0 0 0 0 0 3.14 0</StartState>
+    <JointVelocityLimits>1.5 1.5 1.5 1.5 1.5 1.5 1.5</JointVelocityLimits>
+    <Goal>-1.57 1.57 0 0 0 3.14 0</Goal>
+  </TimeIndexedSamplingProblem>
+
+</PlannerDemoConfig>

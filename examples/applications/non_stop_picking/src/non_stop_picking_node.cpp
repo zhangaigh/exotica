@@ -7,9 +7,13 @@ int main(int argc, char **argv)
     Server::InitRos(std::shared_ptr<ros::NodeHandle>(new ros::NodeHandle("~")));
     NonStopPicking nsp;
 
-    nsp.initialise(parsePath("{non_stop_picking}/resources/time_indexed_rrt_connect.xml"), parsePath("{non_stop_picking}/resources/ik.xml"));
+    std::string rrt_connect_file, optimization_file, constraint_file;
+    Server::getParam("RRTConnectConfigFile", rrt_connect_file);
+    Server::getParam("OptimizationConfigFile", optimization_file);
+    nsp.initialise(rrt_connect_file, optimization_file);
 
-    Trajectory cons(loadFile(parsePath("{non_stop_picking}/resources/constraint.traj")));
+    Server::getParam("ConstraintFile", constraint_file);
+    Trajectory cons(loadFile(constraint_file));
     nsp.setConstraint(cons, 4, 6);
     Eigen::MatrixXd solution;
     CTState start, goal;

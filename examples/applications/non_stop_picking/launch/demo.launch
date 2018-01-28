@@ -10,6 +10,7 @@
   <node launch-prefix="$(arg launch_prefix)" pkg="non_stop_picking" type="non_stop_picking_node" name="NonStopPickingNode" output="screen">
     <param name="RRTConnectConfigFile" type="string" value="$(find non_stop_picking)/resources/time_indexed_rrt_connect.xml" />
     <param name="OptimizationConfigFile" type="string" value="$(find non_stop_picking)/resources/ik.xml" />
+    <param name="ConstraintFile" type="string" value="$(find non_stop_picking)/resources/constraint.traj" />
   </node>
 
   <node name="rviz" pkg="rviz" type="rviz" respawn="false"	args="-d $(find exotica_examples)/resources/rviz.rviz" />
