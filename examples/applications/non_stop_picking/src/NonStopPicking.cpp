@@ -43,7 +43,10 @@ void NonStopPicking::solveConstraint(Eigen::VectorXd &q, double t)
     Eigen::MatrixXd solution;
     KDL::Frame y = constraint_.getPosition(t - tc_start_);
     epp->setStartState(q);
-    epp->Cost.y = {y.p.data[0], y.p.data[1], y.p.data[2], 0.5 * M_PI, 0, -0.5 * M_PI};
+    // epp->Cost.y = {y.p.data[0], y.p.data[1], y.p.data[2], 0.5 * M_PI, 0, -0.5 * M_PI};
+    // epp->Cost.y = {y.p.data[0], y.p.data[1], y.p.data[2]};
+    Eigen::Vector3d target_pos =Eigen::Vector3d(y.p.data[0], y.p.data[1], y.p.data[2]);
+    epp->setGoal("Position", target_pos);
     optimization_solver_->Solve(solution);
     q = solution.row(solution.rows() - 1);
 }
@@ -83,7 +86,7 @@ void NonStopPicking::publishTrajectory(const Eigen::MatrixXd &solution)
         if (first && t >= tc_end_)
         {
             first = false;
-            optimization_problem_->getScene()->attachObject("Target", "lwr_arm_7_link");
+            optimization_problem_->getScene()->attachObject("Target", "panda_hand");
         }
         optimization_problem_->getScene()->publishScene();
         optimization_problem_->getScene()->getSolver().publishFrames();
@@ -106,7 +109,7 @@ bool NonStopPicking::solve(const CTState &start, const CTState &goal, Eigen::Mat
     rrtconnect_solver_->Solve(solution_pre);
 
     rrtconnect_problem_->getScene()->Update(qb, tc_end_);
-    rrtconnect_problem_->getScene()->attachObject("Target", "lwr_arm_7_link");
+    rrtconnect_problem_->getScene()->attachObject("Target", "panda_hand");
 
     rrtconnect_problem_->setStartState(qb);
     rrtconnect_problem_->setStartTime(tc_end_);

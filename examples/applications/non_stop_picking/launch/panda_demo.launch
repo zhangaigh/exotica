@@ -12,6 +12,4 @@
     <param name="OptimizationConfigFile" type="string" value="$(find non_stop_picking)/resources/panda/ik.xml" />
     <param name="ConstraintFile" type="string" value="$(find non_stop_picking)/resources/panda/constraint.traj" />
   </node>
-
-  <node name="rviz" pkg="rviz" type="rviz" respawn="false"	args="-d $(find exotica_examples)/resources/rviz.rviz" />
 </launch>

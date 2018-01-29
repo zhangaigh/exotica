@@ -28,6 +28,11 @@
             <Frame Link="panda_hand"/>
         </EndEffector>
       </EffPosition>
+      <EffOrientation Name="Orientation">
+        <EndEffector>
+            <Frame Link="panda_hand" LinkOffset="0 0 0 1.57 -1.57 1.57"/>
+        </EndEffector>
+      </EffOrientation>
       <JointLimit Name="JointLimit">
         <SafePercentage>0.1</SafePercentage>
       </JointLimit>
@@ -35,6 +40,7 @@
 
     <Cost>
       <Task Task="Position"/>
+      <Task Task="Orientation"/>
       <Task Task="JointLimit"/>
     </Cost>
 
