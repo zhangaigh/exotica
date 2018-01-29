@@ -1,0 +1,51 @@
+<?xml version="1.0" ?>
+<IKSolverDemoConfig>
+  <OptppTrajLBFGS Name="MySolver">
+    <MaxIterations>500</MaxIterations>
+  </OptppTrajLBFGS>
+
+  <UnconstrainedTimeIndexedProblem Name="MyProblem">
+
+    <PlanningScene>
+      <Scene>
+        <JointGroup>arm</JointGroup>
+        <LoadScene>{non_stop_picking}/resources/panda/demo.scene</LoadScene>
+        <Trajectories>
+          <Trajectory Link="Target" File="{non_stop_picking}/resources/panda/constraint.traj" />
+        </Trajectories>
+      </Scene>
+    </PlanningScene>
+    
+    <Maps>
+      <EffPosition Name="Position">
+        <EndEffector>
+            <Frame Link="panda_hand" Base="Target"/>
+        </EndEffector>
+      </EffPosition>
+      <EffOrientation Name="Orientation">
+        <EndEffector>
+            <Frame Link="panda_hand" LinkOffset="0 0 0 1.57 -1.57 1.57"/>
+        </EndEffector>
+      </EffOrientation>
+      <JointLimit Name="JointLimit">
+        <SafePercentage>0.1</SafePercentage>
+      </JointLimit>
+    </Maps>
+
+    <Cost>
+      <Task Task="Position"/>
+      <Task Task="Orientation"/>
+      <Task Task="JointLimit"/>
+    </Cost>
+
+    <!-- <StartState>0.744096    -0.836684    -0.941316     -2.48025 -0.000940713        3.457      0.14422</StartState> -->
+    <!-- <NominalState>0 0 0 0 0 0 0</NominalState> -->
+    <T>100</T>
+    <Tau>0.02</Tau>
+    <Qrate>1e-10</Qrate>
+    <Hrate>1</Hrate>
+    <Wrate>1e3</Wrate>
+    <W> 1 1 1 1 1 1 1 </W>
+  </UnconstrainedTimeIndexedProblem>
+
+</IKSolverDemoConfig>

@@ -17,7 +17,7 @@
           <Trajectory Link="Obstacle" File="{non_stop_picking}/resources/panda/moving_obstacle.traj" />
           <Trajectory Link="Table" File="{non_stop_picking}/resources/panda/moving_table.traj" />
         </Trajectories>
-        <CollisionScene>CollisionSceneFCLLatest</CollisionScene>
+        <CollisionScene>CollisionSceneFCL</CollisionScene>
         <AlwaysUpdateCollisionScene>0</AlwaysUpdateCollisionScene>
       </Scene>
     </PlanningScene>

@@ -12,7 +12,7 @@ int main(int argc, char **argv)
     Server::getParam("EndPoseConfigFile", endpose_file);
     Server::getParam("TrajectoryOptConfigFile", trajectory_file);
     Server::getParam("EndEffectorLink", eef_link);
-    nsp.initialise(rrt_connect_file, endpose_file, trajectory_file, eef_link);
+    nsp.initialise(rrt_connect_file, endpose_file, trajectory_file, eef_link, 8);
 
     Server::getParam("ConstraintFile", constraint_file);
     Trajectory cons(loadFile(constraint_file));

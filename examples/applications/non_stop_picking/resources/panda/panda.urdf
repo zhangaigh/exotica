@@ -125,11 +125,8 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/yiming/link5.dae"/>
+        <mesh filename="package://franka_description_dae/meshes/link5.dae"/>
       </geometry>
-      <!-- <material name="">
-        <color rgba="1 1 1 1"/>
-      </material> -->
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -150,11 +147,8 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://franka_description/meshes/link6.STL"/>
+        <mesh filename="package://franka_description_dae/meshes/link6.dae"/>
       </geometry>
-      <material name="">
-        <color rgba="1 1 1 1"/>
-      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -175,11 +169,8 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://franka_description/meshes/link7.STL"/>
+        <mesh filename="package://franka_description_dae/meshes/link7.dae"/>
       </geometry>
-      <material name="">
-        <color rgba="1 1 1 1"/>
-      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -229,11 +220,8 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://franka_description/meshes/leftfinger.STL"/>
+        <mesh filename="package://franka_description_dae/meshes/leftfinger.dae"/>
       </geometry>
-      <material name="">
-        <color rgba="1 1 1 1"/>
-      </material>
     </visual>
     <collision>
       <geometry>
@@ -245,11 +233,8 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://franka_description/meshes/rightfinger.STL"/>
+        <mesh filename="package://franka_description_dae/meshes/rightfinger.dae"/>
       </geometry>
-      <material name="">
-        <color rgba="1 1 1 1"/>
-      </material>
     </visual>
     <collision>
       <geometry>

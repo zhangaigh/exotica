@@ -384,9 +384,6 @@ ompl::base::PlannerStatus OMPLTimeIndexedRRTConnect::solve(const base::PlannerTe
         OMPL_ERROR("%s: Unknown type of goal", getName().c_str());
         return base::PlannerStatus::UNRECOGNIZED_GOAL_TYPE;
     }
-    std::cout << "getStartStateCount() in OMPLTimeIndexedRRTConnect: " << pdef_->getStartStateCount() << std::endl;
-    const base::State *check_st = pdef_->getStartState(0);
-    std::cout << "isValid: in OMPLTimeIndexedRRTConnect: " << si_->isValid(check_st) << std::endl;
 
     while (const base::State *st = pis_.nextStart())
     {
@@ -410,7 +407,7 @@ ompl::base::PlannerStatus OMPLTimeIndexedRRTConnect::solve(const base::PlannerTe
 
     if (!sampler_) sampler_ = si_->allocStateSampler();
 
-    OMPL_INFORM("%s: Starting planning with %d states already in datastructure", getName().c_str(), (int)(tStart_->size() + tGoal_->size()));
+    // OMPL_INFORM("%s: Starting planning with %d states already in datastructure", getName().c_str(), (int)(tStart_->size() + tGoal_->size()));
 
     TreeGrowingInfo tgi;
     tgi.xstate = si_->allocState();
@@ -520,7 +517,7 @@ ompl::base::PlannerStatus OMPLTimeIndexedRRTConnect::solve(const base::PlannerTe
     si_->freeState(rstate);
     delete rmotion;
 
-    OMPL_INFORM("%s: Created %u states (%u start + %u goal)", getName().c_str(), tStart_->size() + tGoal_->size(), tStart_->size(), tGoal_->size());
+    // OMPL_INFORM("%s: Created %u states (%u start + %u goal)", getName().c_str(), tStart_->size() + tGoal_->size(), tStart_->size(), tGoal_->size());
     return solved ? base::PlannerStatus::EXACT_SOLUTION : base::PlannerStatus::TIMEOUT;
 }
 
