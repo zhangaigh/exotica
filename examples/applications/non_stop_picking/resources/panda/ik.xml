@@ -1,13 +1,9 @@
 <?xml version="1.0" ?>
 <IKSolverDemoConfig>
 
-  <IKsolver Name="MySolver">
-    <MaxIt>100</MaxIt>
-    <MaxStep>0.1</MaxStep>
-    <Tolerance>1e-5</Tolerance>
-    <Alpha>1.0</Alpha>
-    <C>1e-3</C>
-  </IKsolver>
+  <OptppIKLBFGS Name="MySolver">
+    <MaxIterations>500</MaxIterations>
+  </OptppIKLBFGS>
 
   <UnconstrainedEndPoseProblem Name="MyProblem">
 
@@ -15,10 +11,6 @@
       <Scene>
         <JointGroup>arm</JointGroup>
         <LoadScene>{non_stop_picking}/resources/panda/demo.scene</LoadScene>
-        <Trajectories>
-          <Trajectory Link="Obstacle" File="{non_stop_picking}/resources/panda/moving_obstacle.traj" />
-          <Trajectory Link="Table" File="{non_stop_picking}/resources/panda/moving_table.traj" />
-        </Trajectories>
       </Scene>
     </PlanningScene>
     
@@ -43,10 +35,7 @@
       <Task Task="Orientation"/>
       <Task Task="JointLimit"/>
     </Cost>
-
-    <StartState>0 0 0 0 0 0 0</StartState>
-    <NominalState>0 0 0 0 0 0 0</NominalState>
-    <W> 7 6 5 4 3 2 1 </W>
+    <W> 1 1 1 1 1 1 1 </W>
   </UnconstrainedEndPoseProblem>
 
 </IKSolverDemoConfig>

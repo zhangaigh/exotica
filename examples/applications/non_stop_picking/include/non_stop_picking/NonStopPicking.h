@@ -2,7 +2,8 @@
 #define NON_STOP_PICKING_H
 
 #include <exotica/Exotica.h>
-#include <ik_solver/IKSolver.h>
+#include <exotica/Problems/UnconstrainedEndPoseProblem.h>
+#include <exotica/Problems/UnconstrainedTimeIndexedProblem.h>
 #include <time_indexed_rrt_connect/TimeIndexedRRTConnect.h>
 #include <boost/thread.hpp>
 
@@ -18,7 +19,7 @@ public:
     NonStopPicking();
     ~NonStopPicking();
 
-    bool initialise(const std::string &rrtconnect_filepath, const std::string &optimization_filepath);
+    bool initialise(const std::string &rrtconnect_filepath, const std::string &endpose_filepath, const std::string &trajectory_filepath, std::string &eef_link);
     bool setConstraint(Trajectory &cons, double start, double end);
     bool solve(const CTState &start, const CTState &goal, Eigen::MatrixXd &solution);
     void solveConstraint(Eigen::VectorXd &q, double t);
@@ -30,11 +31,15 @@ public:
     Trajectory constraint_;
     double tc_start_;
     double tc_end_;
+    std::string eef_link_;
+    KDL::Frame default_target_pose_;
 
     TimeIndexedSamplingProblem_ptr rrtconnect_problem_;
     TimeIndexedRRTConnect_ptr rrtconnect_solver_;
-    PlanningProblem_ptr optimization_problem_;
-    MotionSolver_ptr optimization_solver_;
+    UnconstrainedEndPoseProblem_ptr endpose_problem_;
+    MotionSolver_ptr endpose_solver_;
+    UnconstrainedTimeIndexedProblem_ptr trajectory_problem_;
+    MotionSolver_ptr trajectory_solver_;
 };
 
 typedef std::shared_ptr<NonStopPicking> NonStopPicking_ptr;

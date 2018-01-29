@@ -9,7 +9,9 @@
 
   <node launch-prefix="$(arg launch_prefix)" pkg="non_stop_picking" type="non_stop_picking_node" name="NonStopPickingNode" output="screen">
     <param name="RRTConnectConfigFile" type="string" value="$(find non_stop_picking)/resources/panda/time_indexed_rrt_connect.xml" />
-    <param name="OptimizationConfigFile" type="string" value="$(find non_stop_picking)/resources/panda/ik.xml" />
+    <param name="EndPoseConfigFile" type="string" value="$(find non_stop_picking)/resources/panda/ik.xml" />
+    <param name="TrajectoryOptConfigFile" type="string" value="$(find non_stop_picking)/resources/panda/traj_opt.xml" />
     <param name="ConstraintFile" type="string" value="$(find non_stop_picking)/resources/panda/constraint.traj" />
+    <param name="EndEffectorLink" type="string" value="panda_hand" />
   </node>
 </launch>

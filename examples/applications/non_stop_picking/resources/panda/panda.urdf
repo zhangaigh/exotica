@@ -125,11 +125,11 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://franka_description/meshes/link5.STL"/>
+        <mesh filename="file:///home/yiming/link5.dae"/>
       </geometry>
-      <material name="">
+      <!-- <material name="">
         <color rgba="1 1 1 1"/>
-      </material>
+      </material> -->
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>

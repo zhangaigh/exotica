@@ -30,10 +30,9 @@
       <Task Task="Collision"/>
     </Constraint>
 
-    <StartState>0 0 0 0 0 3.14 0</StartState>
+    <StartState>0 0 0 0 0 0.1 0</StartState>
     <JointVelocityLimits>1.5 1.5 1.5 1.5 1.5 1.5 1.5</JointVelocityLimits>
-    <!--Goal>2.16939  1.313509   -2.2954   1.94413 -0.276843  0.567194         0</Goal-->
-    <Goal>0 0 0 0 0 3.14 0</Goal>
+    <Goal>1.7 -0.5657 0 -2.4297 0 3.4346 0.7522</Goal>
   </TimeIndexedSamplingProblem>
 
 </PlannerDemoConfig>

@@ -7,10 +7,12 @@ int main(int argc, char **argv)
     Server::InitRos(std::shared_ptr<ros::NodeHandle>(new ros::NodeHandle("~")));
     NonStopPicking nsp;
 
-    std::string rrt_connect_file, optimization_file, constraint_file;
+    std::string rrt_connect_file, endpose_file, trajectory_file, constraint_file, eef_link;
     Server::getParam("RRTConnectConfigFile", rrt_connect_file);
-    Server::getParam("OptimizationConfigFile", optimization_file);
-    nsp.initialise(rrt_connect_file, optimization_file);
+    Server::getParam("EndPoseConfigFile", endpose_file);
+    Server::getParam("TrajectoryOptConfigFile", trajectory_file);
+    Server::getParam("EndEffectorLink", eef_link);
+    nsp.initialise(rrt_connect_file, endpose_file, trajectory_file, eef_link);
 
     Server::getParam("ConstraintFile", constraint_file);
     Trajectory cons(loadFile(constraint_file));

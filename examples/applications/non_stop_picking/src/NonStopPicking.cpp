@@ -9,7 +9,7 @@ NonStopPicking::~NonStopPicking()
 {
 }
 
-bool NonStopPicking::initialise(const std::string &rrtconnect_filepath, const std::string &optimization_filepath)
+bool NonStopPicking::initialise(const std::string &rrtconnect_filepath, const std::string &endpose_filepath, const std::string &trajectory_filepath, std::string &eef_link)
 {
     Initializer solver, problem;
 
@@ -20,13 +20,35 @@ bool NonStopPicking::initialise(const std::string &rrtconnect_filepath, const st
     rrtconnect_solver_ = std::static_pointer_cast<TimeIndexedRRTConnect>(any_solver);
     rrtconnect_solver_->specifyProblem(rrtconnect_problem_);
 
-    XMLLoader::load(optimization_filepath, solver, problem);
-    optimization_problem_ = Setup::createProblem(problem);
-    optimization_solver_ = Setup::createSolver(solver);
-    optimization_solver_->specifyProblem(optimization_problem_);
+    XMLLoader::load(endpose_filepath, solver, problem);
+    endpose_problem_ = std::static_pointer_cast<UnconstrainedEndPoseProblem>(Setup::createProblem(problem));
+    endpose_solver_ = Setup::createSolver(solver);
+    endpose_solver_->specifyProblem(endpose_problem_);
+
+    XMLLoader::load(trajectory_filepath, solver, problem);
+    trajectory_problem_ = std::static_pointer_cast<UnconstrainedTimeIndexedProblem>(Setup::createProblem(problem));
+    trajectory_solver_ = Setup::createSolver(solver);
+    trajectory_solver_->specifyProblem(trajectory_problem_);
 
     rrtconnect_problem_->getScene()->attachObject("Target", "Table");
-    optimization_problem_->getScene()->attachObject("Target", "Table");
+    eef_link_ = eef_link;
+
+    endpose_problem_->setRho("Position", 1000.0);
+    endpose_problem_->setRho("Orientation", 500.0);
+    endpose_problem_->setRho("JointLimit", 500.0);
+
+    Eigen::VectorXd qs = rrtconnect_problem_->applyStartState();
+    rrtconnect_problem_->getScene()->Update(qs, 0);
+    default_target_pose_ = rrtconnect_problem_->getScene()->getSolver().FK("Target", KDL::Frame(), "Table", KDL::Frame());
+
+    rrtconnect_problem_->getScene()->getCollisionScene()->setWorldLinkPadding(0.01);
+    rrtconnect_problem_->getScene()->updateCollisionObjects();
+
+    for (int i = 0; i < trajectory_problem_->getT(); i++) {
+        trajectory_problem_->setRho("Position", 10000.0, i);
+        trajectory_problem_->setRho("Orientation", 5000.0, i);
+        trajectory_problem_->setRho("JointLimit", 5000.0, i);
+    }
 }
 
 bool NonStopPicking::setConstraint(Trajectory &cons, double start, double end)
@@ -39,57 +61,54 @@ bool NonStopPicking::setConstraint(Trajectory &cons, double start, double end)
 
 void NonStopPicking::solveConstraint(Eigen::VectorXd &q, double t)
 {
-    const UnconstrainedEndPoseProblem_ptr epp = std::static_pointer_cast<UnconstrainedEndPoseProblem>(optimization_problem_);
     Eigen::MatrixXd solution;
     KDL::Frame y = constraint_.getPosition(t - tc_start_);
-    epp->setStartState(q);
-    // epp->Cost.y = {y.p.data[0], y.p.data[1], y.p.data[2], 0.5 * M_PI, 0, -0.5 * M_PI};
-    // epp->Cost.y = {y.p.data[0], y.p.data[1], y.p.data[2]};
-    Eigen::Vector3d target_pos =Eigen::Vector3d(y.p.data[0], y.p.data[1], y.p.data[2]);
-    epp->setGoal("Position", target_pos);
-    optimization_solver_->Solve(solution);
+    endpose_problem_->setStartState(q);
+    Eigen::Vector3d target_pos = Eigen::Vector3d(y.p.data[0], y.p.data[1], y.p.data[2]);
+    endpose_problem_->setGoal("Position", target_pos);
+    endpose_solver_->Solve(solution);
     q = solution.row(solution.rows() - 1);
 }
 
 void NonStopPicking::solveConstraintTrajectory(const Eigen::VectorXd &qs, double ta, double tb, Eigen::MatrixXd &solution)
 {
-    solution.resize(0, qs.size() + 1);
-    double dt = 0.02;
+    Eigen::MatrixXd tmp_solution;
+    trajectory_problem_->setStartState(qs);
+    // Initial Trajectory
+    std::vector<Eigen::VectorXd> initial_guess;
+    initial_guess.assign(trajectory_problem_->getT(), qs);
+    trajectory_problem_->setInitialTrajectory(initial_guess);
+    
+    trajectory_solver_->Solve(tmp_solution);
+    solution.resize(tmp_solution.rows(),tmp_solution.cols()+1);
+    double dt = (tb-ta)/(tmp_solution.rows()-1.0);
     unsigned int i = 0;
-    Eigen::VectorXd q = qs;
     for (double t = ta; t < tb; t += dt)
     {
-        solveConstraint(q, t);
-        solution.conservativeResize(solution.rows() + 1, solution.cols());
-        solution(solution.rows() - 1, 0) = t;
-        solution.row(solution.rows() - 1).tail(q.size()) = q;
+        solution(i, 0) = t;
+        solution.row(i).tail(tmp_solution.cols()) = tmp_solution.row(i);
+        i++;
     }
-    solveConstraint(q, tb);
-    solution.conservativeResize(solution.rows() + 1, solution.cols());
-    solution(solution.rows() - 1, 0) = tb;
-    solution.row(solution.rows() - 1).tail(q.size()) = q;
 }
 
 void NonStopPicking::publishTrajectory(const Eigen::MatrixXd &solution)
 {
-    optimization_problem_->getScene()->Update(solution.row(0).tail(solution.cols() - 1), solution(0, 0));
-    static KDL::Frame default_pose = optimization_problem_->getScene()->getSolver().FK("Target", KDL::Frame(), "Table", KDL::Frame());
-    optimization_problem_->getScene()->attachObjectLocal("Target", "Table", default_pose);
+    rrtconnect_problem_->getScene()->attachObjectLocal("Target", "Table", default_target_pose_);
     bool first = true;
 
     for (int i = 0; i < solution.rows() - 1; i++)
     {
         double t = solution(i, 0);
         Eigen::VectorXd q = solution.row(i).tail(solution.cols() - 1);
-        optimization_problem_->getScene()->Update(q, t);
+        rrtconnect_problem_->getScene()->Update(q, t);
 
         if (first && t >= tc_end_)
         {
             first = false;
-            optimization_problem_->getScene()->attachObject("Target", "panda_hand");
+            rrtconnect_problem_->getScene()->attachObject("Target", eef_link_);
         }
-        optimization_problem_->getScene()->publishScene();
-        optimization_problem_->getScene()->getSolver().publishFrames();
+        rrtconnect_problem_->getScene()->publishScene();
+        rrtconnect_problem_->getScene()->getSolver().publishFrames();
         ros::Duration(solution(i + 1, 0) - t).sleep();
     }
 }
@@ -99,8 +118,9 @@ bool NonStopPicking::solve(const CTState &start, const CTState &goal, Eigen::Mat
     Eigen::MatrixXd solution_pre, solution_after, solution_constrained;
     Eigen::VectorXd q_goal = rrtconnect_problem_->getGoalState();
     double t_goal = rrtconnect_problem_->getGoalTime();
-    Eigen::VectorXd qs = optimization_problem_->applyStartState();
+    Eigen::VectorXd qs = endpose_problem_->applyStartState();
     qs.setRandom();
+    solveConstraint(qs, tc_start_);
     solveConstraintTrajectory(qs, tc_start_, tc_end_, solution_constrained);
     Eigen::VectorXd qa = solution_constrained.row(0).tail(q_goal.size()), qb = solution_constrained.row(solution_constrained.rows() - 1).tail(q_goal.size());
 
@@ -109,7 +129,7 @@ bool NonStopPicking::solve(const CTState &start, const CTState &goal, Eigen::Mat
     rrtconnect_solver_->Solve(solution_pre);
 
     rrtconnect_problem_->getScene()->Update(qb, tc_end_);
-    rrtconnect_problem_->getScene()->attachObject("Target", "panda_hand");
+    rrtconnect_problem_->getScene()->attachObject("Target", eef_link_);
 
     rrtconnect_problem_->setStartState(qb);
     rrtconnect_problem_->setStartTime(tc_end_);
@@ -139,7 +159,7 @@ bool NonStopPickingThreaded::initialise(const std::string &rrtconnect_filepath, 
     for (int i = 0; i < num_threads; i++)
     {
         NSPs_[i].reset(new NonStopPicking());
-        NSPs_[i]->initialise(rrtconnect_filepath, optimization_filepath);
+        // NSPs_[i]->initialise(rrtconnect_filepath, optimization_filepath);
     }
 }
 
