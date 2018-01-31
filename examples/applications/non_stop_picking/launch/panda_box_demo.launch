@@ -1,0 +1,17 @@
+<launch>
+
+  <arg name="debug" default="false" />
+  <arg unless="$(arg debug)" name="launch_prefix" value="" />
+  <arg     if="$(arg debug)" name="launch_prefix" value="xterm -e gdb --args" />
+
+  <param name="robot_description" textfile="$(find non_stop_picking)/resources/panda/panda.urdf" />
+  <param name="robot_description_semantic" textfile="$(find non_stop_picking)/resources/panda/panda.srdf" />
+
+  <node launch-prefix="$(arg launch_prefix)" pkg="non_stop_picking" type="non_stop_picking_node" name="NonStopPickingNode" output="screen">
+    <param name="RRTConnectConfigFile" type="string" value="$(find non_stop_picking)/resources/panda/box/time_indexed_rrt_connect.xml" />
+    <param name="EndPoseConfigFile" type="string" value="$(find non_stop_picking)/resources/panda/box/ik.xml" />
+    <param name="TrajectoryOptConfigFile" type="string" value="$(find non_stop_picking)/resources/panda/box/traj_opt.xml" />
+    <param name="ConstraintFile" type="string" value="$(find non_stop_picking)/resources/panda/box/constraint.traj" />
+    <param name="EndEffectorLink" type="string" value="panda_hand" />
+  </node>
+</launch>

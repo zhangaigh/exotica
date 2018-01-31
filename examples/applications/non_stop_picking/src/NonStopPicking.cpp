@@ -16,7 +16,6 @@ bool NonStopPicking::initialise(const std::string &rrtconnect_filepath, const st
 
     rrtconnect_problems_.resize(num_threads_);
     rrtconnect_solvers_.resize(num_threads_);
-    rrtconnect_solutions_.resize(num_threads_);
     for (int i = 0; i < num_threads_; i++)
     {
         XMLLoader::load(rrtconnect_filepath, solver, problem);
@@ -40,9 +39,9 @@ bool NonStopPicking::initialise(const std::string &rrtconnect_filepath, const st
 
     eef_link_ = eef_link;
 
-    endpose_problem_->setRho("Position", 1000.0);
-    endpose_problem_->setRho("Orientation", 500.0);
-    endpose_problem_->setRho("JointLimit", 500.0);
+    endpose_problem_->setRho("Position", 10000.0);
+    endpose_problem_->setRho("Orientation", 5000.0);
+    endpose_problem_->setRho("JointLimit", 5000.0);
 
     Eigen::VectorXd qs = rrtconnect_problems_[0]->applyStartState();
     rrtconnect_problems_[0]->getScene()->Update(qs, 0);
@@ -123,17 +122,26 @@ void NonStopPicking::publishTrajectory(const Eigen::MatrixXd &solution)
 
 bool NonStopPicking::solve(const CTState &start, const CTState &goal, Eigen::MatrixXd &solution)
 {
-    HIGHLIGHT("Start solving");
+    ros::Time start_time = ros::Time::now();
     Eigen::MatrixXd solution_pre, solution_after, solution_constrained;
+    Eigen::VectorXd q_start = rrtconnect_problems_[0]->applyStartState();
     Eigen::VectorXd q_goal = rrtconnect_problems_[0]->getGoalState();
     double t_goal = rrtconnect_problems_[0]->getGoalTime();
-    Eigen::VectorXd qs = endpose_problem_->applyStartState();
-    qs.setRandom();
+    Eigen::VectorXd qs = q_start;
+
     solveConstraint(qs, tc_start_);
     solveConstraintTrajectory(qs, tc_start_, tc_end_, solution_constrained);
     Eigen::VectorXd qa = solution_constrained.row(0).tail(q_goal.size()), qb = solution_constrained.row(solution_constrained.rows() - 1).tail(q_goal.size());
 
-    solveRRTConnectMultiThreads(qs, qa, 0, tc_start_, solution_pre);
+    HIGHLIGHT("Optimization time " << ros::Duration(ros::Time::now() - start_time).toSec());
+
+    std::shared_ptr<ompl::base::PlannerTerminationCondition> ptc;
+    ptc.reset(new ompl::base::PlannerTerminationCondition(ompl::base::timedPlannerTerminationCondition(5.0)));
+    for (int i = 0; i < rrtconnect_problems_.size(); i++)
+        rrtconnect_solvers_[i]->setPlannerTerminationCondition(ptc);
+
+    start_time = ros::Time::now();
+    solveRRTConnectMultiThreads(q_start, qa, 0, tc_start_, solution_pre);
 
     for (int i = 0; i < rrtconnect_problems_.size(); i++)
     {
@@ -141,13 +149,19 @@ bool NonStopPicking::solve(const CTState &start, const CTState &goal, Eigen::Mat
         rrtconnect_problems_[i]->getScene()->attachObject("Target", eef_link_);
     }
 
+    ptc.reset(new ompl::base::PlannerTerminationCondition(ompl::base::timedPlannerTerminationCondition(5.0)));
+    for (int i = 0; i < rrtconnect_problems_.size(); i++)
+        rrtconnect_solvers_[i]->setPlannerTerminationCondition(ptc);
     solveRRTConnectMultiThreads(qb, q_goal, tc_end_, t_goal, solution_after);
 
-    solution.resize(solution_pre.rows() + solution_constrained.rows() + solution_after.rows(), solution_pre.cols());
+    solution.resize(solution_pre.rows() + solution_constrained.rows() - 2 + solution_after.rows(), solution_pre.cols());
     solution << solution_pre,
-        solution_constrained,
+        solution_constrained.block(1, 0, solution_constrained.rows() - 2, solution_constrained.cols()),
         solution_after;
 
+    HIGHLIGHT("RRT-Connect time " << ros::Duration(ros::Time::now() - start_time).toSec());
+
+    // HIGHLIGHT("Solution \n"<<solution);
     return true;
 }
 
@@ -162,11 +176,8 @@ void NonStopPicking::solveRRTConnectMultiThreads(const Eigen::VectorXd &qa, cons
         th[i]->join();
         delete th[i];
     }
-    for (unsigned int i = 0; i < num_threads_; ++i)
-    {
-        if (rrtconnect_solutions_[i].rows() > 0)
-            solution = rrtconnect_solutions_[i];
-    }
+
+    solution = rrtconnect_solution_;
 }
 
 void NonStopPicking::solveRRTConnect(const Eigen::VectorXd qa, const Eigen::VectorXd qb, double ta, double tb, unsigned int tid)
@@ -175,5 +186,5 @@ void NonStopPicking::solveRRTConnect(const Eigen::VectorXd qa, const Eigen::Vect
     rrtconnect_problems_[tid]->setStartTime(ta);
     rrtconnect_problems_[tid]->setGoalState(qb);
     rrtconnect_problems_[tid]->setGoalTime(tb);
-    rrtconnect_solvers_[tid]->Solve(rrtconnect_solutions_[tid]);
+    rrtconnect_solvers_[tid]->Solve(rrtconnect_solution_);
 }

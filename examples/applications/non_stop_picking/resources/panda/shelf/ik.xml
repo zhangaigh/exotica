@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<IKSolverDemoConfig>
+
+  <OptppIKLBFGS Name="MySolver">
+    <MaxIterations>500</MaxIterations>
+  </OptppIKLBFGS>
+
+  <UnconstrainedEndPoseProblem Name="MyProblem">
+
+    <PlanningScene>
+      <Scene>
+        <JointGroup>arm</JointGroup>
+        <LoadScene>{non_stop_picking}/resources/panda/shelf/demo.scene</LoadScene>
+      </Scene>
+    </PlanningScene>
+    
+    <Maps>
+      <EffPosition Name="Position">
+        <EndEffector>
+            <Frame Link="panda_hand"/>
+        </EndEffector>
+      </EffPosition>
+      <EffOrientation Name="Orientation">
+        <EndEffector>
+            <Frame Link="panda_hand" LinkOffset="0 0 0 1.57 -1.57 1.57"/>
+        </EndEffector>
+      </EffOrientation>
+      <JointLimit Name="JointLimit">
+        <SafePercentage>0.1</SafePercentage>
+      </JointLimit>
+    </Maps>
+
+    <Cost>
+      <Task Task="Position"/>
+      <Task Task="Orientation"/>
+      <Task Task="JointLimit"/>
+    </Cost>
+    <W> 1 1 1 1 1 1 1 </W>
+  </UnconstrainedEndPoseProblem>
+
+</IKSolverDemoConfig>

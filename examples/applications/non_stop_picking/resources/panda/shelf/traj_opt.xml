@@ -9,9 +9,9 @@
     <PlanningScene>
       <Scene>
         <JointGroup>arm</JointGroup>
-        <LoadScene>{non_stop_picking}/resources/panda/demo.scene</LoadScene>
+        <LoadScene>{non_stop_picking}/resources/panda/shelf/demo.scene</LoadScene>
         <Trajectories>
-          <Trajectory Link="Target" File="{non_stop_picking}/resources/panda/constraint.traj" />
+          <Trajectory Link="Target" File="{non_stop_picking}/resources/panda/shelf/constraint.traj" />
         </Trajectories>
       </Scene>
     </PlanningScene>
@@ -38,10 +38,9 @@
       <Task Task="JointLimit"/>
     </Cost>
 
-    <!-- <StartState>0.744096    -0.836684    -0.941316     -2.48025 -0.000940713        3.457      0.14422</StartState> -->
-    <!-- <NominalState>0 0 0 0 0 0 0</NominalState> -->
-    <T>100</T>
-    <Tau>0.02</Tau>
+  
+    <T>50</T>
+    <Tau>0.04</Tau>
     <Qrate>1e-10</Qrate>
     <Hrate>1</Hrate>
     <Wrate>1e3</Wrate>

@@ -125,6 +125,7 @@ void TimeIndexedRRTConnect::Instantiate(TimeIndexedRRTConnectInitializer &init)
         HIGHLIGHT_NAMED(algorithm_, "Setting random seed to " << init_.RandomSeed);
         ompl::RNG::setSeed(init_.RandomSeed);
     }
+    ompl::msg::setLogLevel(ompl::msg::LOG_WARN);
 }
 
 void TimeIndexedRRTConnect::specifyProblem(PlanningProblem_ptr pointer)
@@ -162,6 +163,7 @@ void TimeIndexedRRTConnect::postSolve()
 
     if (ompl_simple_setup_->getProblemDefinition()->hasApproximateSolution())
         logWarn("Computed solution is approximate");
+    ptc_.reset();
 }
 
 void TimeIndexedRRTConnect::setGoalState(const Eigen::VectorXd &qT, const double t, const double eps)
@@ -188,7 +190,7 @@ void TimeIndexedRRTConnect::setGoalState(const Eigen::VectorXd &qT, const double
     ompl_simple_setup_->setGoalState(gs, eps);
 }
 
-void TimeIndexedRRTConnect::getPath(Eigen::MatrixXd &traj, ompl::base::PlannerTerminationCondition &ptc)
+void TimeIndexedRRTConnect::getPath(Eigen::MatrixXd &traj)
 {
     ompl::geometric::PathSimplifierPtr psf_ = ompl_simple_setup_->getPathSimplifier();
     const ompl::base::SpaceInformationPtr &si = ompl_simple_setup_->getSpaceInformation();
@@ -197,21 +199,18 @@ void TimeIndexedRRTConnect::getPath(Eigen::MatrixXd &traj, ompl::base::PlannerTe
     if (init_.Smooth)
     {
         bool tryMore = false;
-        if (ptc == false) tryMore = psf_->reduceVertices(pg);
-        if (ptc == false) psf_->collapseCloseVertices(pg);
+        tryMore = psf_->reduceVertices(pg);
+        psf_->collapseCloseVertices(pg);
         int times = 0;
-        while (times < 10 && tryMore && ptc == false)
+        while (times < 10 && tryMore)
         {
             tryMore = psf_->reduceVertices(pg);
             times++;
         }
         if (si->getStateSpace()->isMetricSpace())
         {
-            if (ptc == false)
-                tryMore = psf_->shortcutPath(pg);
-            else
-                tryMore = false;
-            while (times < 10 && tryMore && ptc == false)
+            tryMore = psf_->shortcutPath(pg);
+            while (times < 10 && tryMore)
             {
                 tryMore = psf_->shortcutPath(pg);
                 times++;
@@ -248,12 +247,18 @@ void TimeIndexedRRTConnect::Solve(Eigen::MatrixXd &solution)
 
     preSolve();
     ompl::time::point start = ompl::time::now();
-    ompl::base::PlannerTerminationCondition ptc = ompl::base::timedPlannerTerminationCondition(init_.Timeout - ompl::time::seconds(ompl::time::now() - start));
-    if (ompl_simple_setup_->solve(ptc) == ompl::base::PlannerStatus::EXACT_SOLUTION && ompl_simple_setup_->haveSolutionPath())
+    if (!ptc_)
+        ptc_.reset(new ompl::base::PlannerTerminationCondition(ompl::base::timedPlannerTerminationCondition(init_.Timeout - ompl::time::seconds(ompl::time::now() - start))));
+    if (ompl_simple_setup_->solve(*ptc_) == ompl::base::PlannerStatus::EXACT_SOLUTION && ompl_simple_setup_->haveSolutionPath())
     {
-        getPath(solution, ptc);
+        getPath(solution);
     }
     postSolve();
+}
+
+void TimeIndexedRRTConnect::setPlannerTerminationCondition(const std::shared_ptr<ompl::base::PlannerTerminationCondition> &ptc)
+{
+    ptc_ = ptc;
 }
 
 OMPLTimeIndexedRRTConnect::OMPLTimeIndexedRRTConnect(const base::SpaceInformationPtr &si) : base::Planner(si, "OMPLTimeIndexedRRTConnect")
@@ -512,6 +517,9 @@ ompl::base::PlannerStatus OMPLTimeIndexedRRTConnect::solve(const base::PlannerTe
             }
         }
     }
+
+    if (solved)
+        ptc.terminate();
 
     si_->freeState(tgi.xstate);
     si_->freeState(rstate);

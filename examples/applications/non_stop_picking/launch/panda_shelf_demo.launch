@@ -8,10 +8,10 @@
   <param name="robot_description_semantic" textfile="$(find non_stop_picking)/resources/panda/panda.srdf" />
 
   <node launch-prefix="$(arg launch_prefix)" pkg="non_stop_picking" type="non_stop_picking_node" name="NonStopPickingNode" output="screen">
-    <param name="RRTConnectConfigFile" type="string" value="$(find non_stop_picking)/resources/panda/time_indexed_rrt_connect.xml" />
-    <param name="EndPoseConfigFile" type="string" value="$(find non_stop_picking)/resources/panda/ik.xml" />
-    <param name="TrajectoryOptConfigFile" type="string" value="$(find non_stop_picking)/resources/panda/traj_opt.xml" />
-    <param name="ConstraintFile" type="string" value="$(find non_stop_picking)/resources/panda/constraint.traj" />
+    <param name="RRTConnectConfigFile" type="string" value="$(find non_stop_picking)/resources/panda/shelf/time_indexed_rrt_connect.xml" />
+    <param name="EndPoseConfigFile" type="string" value="$(find non_stop_picking)/resources/panda/shelf/ik.xml" />
+    <param name="TrajectoryOptConfigFile" type="string" value="$(find non_stop_picking)/resources/panda/shelf/traj_opt.xml" />
+    <param name="ConstraintFile" type="string" value="$(find non_stop_picking)/resources/panda/shelf/constraint.traj" />
     <param name="EndEffectorLink" type="string" value="panda_hand" />
   </node>
 </launch>

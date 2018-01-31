@@ -10,7 +10,7 @@
     <PlanningScene>
       <Scene>
         <JointGroup>arm</JointGroup>
-        <LoadScene>{non_stop_picking}/resources/panda/demo.scene</LoadScene>
+        <LoadScene>{non_stop_picking}/resources/panda/box/demo.scene</LoadScene>
       </Scene>
     </PlanningScene>
     
@@ -22,7 +22,7 @@
       </EffPosition>
       <EffOrientation Name="Orientation">
         <EndEffector>
-            <Frame Link="panda_hand" LinkOffset="0 0 0 1.57 -1.57 1.57"/>
+            <Frame Link="panda_hand" LinkOffset="0 0 0 0 -3.14 1.57"/>
         </EndEffector>
       </EffOrientation>
       <JointLimit Name="JointLimit">

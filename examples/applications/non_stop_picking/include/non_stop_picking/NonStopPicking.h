@@ -38,7 +38,7 @@ public:
 
     std::vector<TimeIndexedSamplingProblem_ptr> rrtconnect_problems_;
     std::vector<TimeIndexedRRTConnect_ptr> rrtconnect_solvers_;
-    std::vector<Eigen::MatrixXd> rrtconnect_solutions_;
+    Eigen::MatrixXd rrtconnect_solution_;
     UnconstrainedEndPoseProblem_ptr endpose_problem_;
     MotionSolver_ptr endpose_solver_;
     UnconstrainedTimeIndexedProblem_ptr trajectory_problem_;

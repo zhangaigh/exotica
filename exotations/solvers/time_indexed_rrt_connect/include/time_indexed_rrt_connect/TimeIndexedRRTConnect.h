@@ -116,6 +116,7 @@ public:
     virtual void Instantiate(TimeIndexedRRTConnectInitializer &init);
     virtual void Solve(Eigen::MatrixXd &solution);
     virtual void specifyProblem(PlanningProblem_ptr pointer);
+    void setPlannerTerminationCondition(const std::shared_ptr<ompl::base::PlannerTerminationCondition> &ptc);
 
 protected:
     template <typename T>
@@ -129,13 +130,15 @@ protected:
     void setGoalState(const Eigen::VectorXd &qT, const double t, const double eps = 0);
     void preSolve();
     void postSolve();
-    void getPath(Eigen::MatrixXd &traj, ompl::base::PlannerTerminationCondition &ptc);
+    void getPath(Eigen::MatrixXd &traj);
     TimeIndexedRRTConnectInitializer init_;
     TimeIndexedSamplingProblem_ptr prob_;
     ompl::geometric::SimpleSetupPtr ompl_simple_setup_;
     ompl::base::StateSpacePtr state_space_;
     ConfiguredPlannerAllocator planner_allocator_;
     std::string algorithm_;
+
+    std::shared_ptr<ompl::base::PlannerTerminationCondition> ptc_;
 };
 
 typedef std::shared_ptr<exotica::TimeIndexedRRTConnect> TimeIndexedRRTConnect_ptr;

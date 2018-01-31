@@ -12,10 +12,10 @@
     <PlanningScene>
       <Scene>
         <JointGroup>arm</JointGroup>
-        <LoadScene>{non_stop_picking}/resources/panda/demo.scene</LoadScene>
+        <LoadScene>{non_stop_picking}/resources/panda/shelf/demo.scene</LoadScene>
         <Trajectories>
-          <Trajectory Link="Obstacle" File="{non_stop_picking}/resources/panda/moving_obstacle.traj" />
-          <Trajectory Link="Table" File="{non_stop_picking}/resources/panda/moving_table.traj" />
+          <Trajectory Link="Obstacle" File="{non_stop_picking}/resources/panda/shelf/moving_obstacle.traj" />
+          <Trajectory Link="Table" File="{non_stop_picking}/resources/panda/shelf/moving_table.traj" />
         </Trajectories>
         <CollisionScene>CollisionSceneFCL</CollisionScene>
         <AlwaysUpdateCollisionScene>0</AlwaysUpdateCollisionScene>
@@ -30,8 +30,8 @@
       <Task Task="Collision"/>
     </Constraint>
 
-    <StartState>0 0 0 0 0 0.1 0</StartState>
-    <JointVelocityLimits>1.5 1.5 1.5 1.5 1.5 1.5 1.5</JointVelocityLimits>
+    <StartState>0 -0.5 0 -1 0 3 1</StartState>
+    <JointVelocityLimits>1 1 1 1 1 1 1</JointVelocityLimits>
     <Goal>1.7 -0.5657 0 -2.4297 0 3.4346 0.7522</Goal>
   </TimeIndexedSamplingProblem>
 
