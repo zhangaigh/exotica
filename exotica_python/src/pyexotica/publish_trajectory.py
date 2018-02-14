@@ -31,10 +31,9 @@ def publishTimeIndexedTrajectory(traj, Ts, problem, once=False):
     print('Playing back trajectory '+str(len(Ts)) +
           ' states in '+str(Ts[len(Ts)-1]))
     idx = 0
-
     while True:
         try:
-            for i in range(1, len(Ts)-1):
+            for i in range(1, len(Ts)):
                 publishPose(traj[i], problem, Ts[i])
                 sleep(Ts[i]-Ts[i-1])
             if once:

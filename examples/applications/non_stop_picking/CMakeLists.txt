@@ -4,7 +4,7 @@ project(non_stop_picking)
 add_compile_options(-std=c++11)
 find_package(OMPL REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
-  exotica time_indexed_rrt_connect ik_solver
+  exotica time_indexed_rrt_connect ik_solver moveit_core
 )
 
 find_package(Boost REQUIRED COMPONENTS system)
@@ -12,7 +12,7 @@ find_package(Boost REQUIRED COMPONENTS system)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES non_stop_picking
-  CATKIN_DEPENDS exotica time_indexed_rrt_connect ik_solver
+  CATKIN_DEPENDS exotica time_indexed_rrt_connect ik_solver moveit_core
 )
 
 include_directories(

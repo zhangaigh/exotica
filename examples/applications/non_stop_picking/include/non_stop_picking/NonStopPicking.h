@@ -45,5 +45,8 @@ public:
     MotionSolver_ptr trajectory_solver_;
 
     unsigned int num_threads_;
+
+    double opt_time_;
+    double rrtconnect_time_;
 };
 #endif

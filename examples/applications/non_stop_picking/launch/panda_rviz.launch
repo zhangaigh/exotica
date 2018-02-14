@@ -2,5 +2,5 @@
   <param name="robot_description" textfile="$(find non_stop_picking)/resources/panda/panda.urdf" />
   <param name="robot_description_semantic" textfile="$(find non_stop_picking)/resources/panda/panda.srdf" />
 
-  <node name="rviz" pkg="rviz" type="rviz" respawn="false"	args="-d $(find exotica_examples)/resources/rviz.rviz" />
+  <node name="rviz2" pkg="rviz" type="rviz" respawn="false"	args="-d $(find exotica_examples)/resources/rviz.rviz" />
 </launch>

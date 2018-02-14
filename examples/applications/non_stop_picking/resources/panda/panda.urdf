@@ -8,11 +8,8 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://franka_description/meshes/link0.STL"/>
+        <mesh filename="package://franka_description/meshes/link0.dae"/>
       </geometry>
-      <material name="">
-        <color rgba="1 1 1 1"/>
-      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -25,7 +22,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://franka_description/meshes/link1.STL"/>
+        <mesh filename="package://franka_description/meshes/link1.dae"/>
       </geometry>
       <material name="">
         <color rgba="1 1 1 1"/>
@@ -50,7 +47,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://franka_description/meshes/link2.STL"/>
+        <mesh filename="package://franka_description/meshes/link2.dae"/>
       </geometry>
       <material name="">
         <color rgba="1 1 1 1"/>
@@ -75,11 +72,8 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://franka_description/meshes/link3.STL"/>
+        <mesh filename="package://franka_description/meshes/link3.dae"/>
       </geometry>
-      <material name="">
-        <color rgba="1 1 1 1"/>
-      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -100,11 +94,8 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://franka_description/meshes/link4.STL"/>
+        <mesh filename="package://franka_description/meshes/link4.dae"/>
       </geometry>
-      <material name="">
-        <color rgba="1 1 1 1"/>
-      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -125,7 +116,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://franka_description_dae/meshes/link5.dae"/>
+        <mesh filename="package://franka_description/meshes/link5.dae"/>
       </geometry>
     </visual>
     <collision>
@@ -147,7 +138,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://franka_description_dae/meshes/link6.dae"/>
+        <mesh filename="package://franka_description/meshes/link6.dae"/>
       </geometry>
     </visual>
     <collision>
@@ -169,7 +160,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://franka_description_dae/meshes/link7.dae"/>
+        <mesh filename="package://franka_description/meshes/link7.dae"/>
       </geometry>
     </visual>
     <collision>
@@ -203,11 +194,8 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://franka_description/meshes/hand.STL"/>
+        <mesh filename="package://franka_description/meshes/hand.dae"/>
       </geometry>
-      <material name="">
-        <color rgba="1 1 1 1"/>
-      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -220,7 +208,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://franka_description_dae/meshes/leftfinger.dae"/>
+        <mesh filename="package://franka_description/meshes/leftfinger.dae"/>
       </geometry>
     </visual>
     <collision>
@@ -233,7 +221,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://franka_description_dae/meshes/rightfinger.dae"/>
+        <mesh filename="package://franka_description/meshes/rightfinger.dae"/>
       </geometry>
     </visual>
     <collision>

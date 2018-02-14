@@ -103,9 +103,22 @@ void NonStopPicking::publishTrajectory(const Eigen::MatrixXd &solution)
     rrtconnect_problems_[0]->getScene()->attachObjectLocal("Target", "Table", default_target_pose_);
     bool first = true;
 
+    std::map<std::string, double> finger;
+    finger["panda_finger_joint1"] = 0.04;
+    finger["panda_finger_joint2"] = 0.04;
+
+    rrtconnect_problems_[0]->getScene()->setModelState(finger);
     for (int i = 0; i < solution.rows() - 1; i++)
     {
         double t = solution(i, 0);
+
+        if(t >=5 && t<=6)
+        {
+            finger["panda_finger_joint1"] = 0.04-0.016*(t-5.0);
+            finger["panda_finger_joint2"] = 0.04-0.016*(t-5.0);            
+            rrtconnect_problems_[0]->getScene()->setModelState(finger);
+        }
+
         Eigen::VectorXd q = solution.row(i).tail(solution.cols() - 1);
         rrtconnect_problems_[0]->getScene()->Update(q, t);
 
@@ -133,10 +146,11 @@ bool NonStopPicking::solve(const CTState &start, const CTState &goal, Eigen::Mat
     solveConstraintTrajectory(qs, tc_start_, tc_end_, solution_constrained);
     Eigen::VectorXd qa = solution_constrained.row(0).tail(q_goal.size()), qb = solution_constrained.row(solution_constrained.rows() - 1).tail(q_goal.size());
 
-    HIGHLIGHT("Optimization time " << ros::Duration(ros::Time::now() - start_time).toSec());
+    opt_time_=ros::Duration(ros::Time::now() - start_time).toSec();
+    // HIGHLIGHT("Optimization time " << opt_time_<<" "<<rrtconnect_solvers_[0]->init_.Timeout);
 
     std::shared_ptr<ompl::base::PlannerTerminationCondition> ptc;
-    ptc.reset(new ompl::base::PlannerTerminationCondition(ompl::base::timedPlannerTerminationCondition(5.0)));
+    ptc.reset(new ompl::base::PlannerTerminationCondition(ompl::base::timedPlannerTerminationCondition(rrtconnect_solvers_[0]->init_.Timeout)));
     for (int i = 0; i < rrtconnect_problems_.size(); i++)
         rrtconnect_solvers_[i]->setPlannerTerminationCondition(ptc);
 
@@ -149,17 +163,23 @@ bool NonStopPicking::solve(const CTState &start, const CTState &goal, Eigen::Mat
         rrtconnect_problems_[i]->getScene()->attachObject("Target", eef_link_);
     }
 
-    ptc.reset(new ompl::base::PlannerTerminationCondition(ompl::base::timedPlannerTerminationCondition(5.0)));
+    ptc.reset(new ompl::base::PlannerTerminationCondition(ompl::base::timedPlannerTerminationCondition(rrtconnect_solvers_[0]->init_.Timeout)));
     for (int i = 0; i < rrtconnect_problems_.size(); i++)
         rrtconnect_solvers_[i]->setPlannerTerminationCondition(ptc);
     solveRRTConnectMultiThreads(qb, q_goal, tc_end_, t_goal, solution_after);
 
+    if(solution_pre.rows() == 0 || solution_constrained.rows() == 0 || solution_after.rows() == 0)
+    {
+        HIGHLIGHT("Something failed ");
+        return false;
+    }
     solution.resize(solution_pre.rows() + solution_constrained.rows() - 2 + solution_after.rows(), solution_pre.cols());
     solution << solution_pre,
         solution_constrained.block(1, 0, solution_constrained.rows() - 2, solution_constrained.cols()),
         solution_after;
 
-    HIGHLIGHT("RRT-Connect time " << ros::Duration(ros::Time::now() - start_time).toSec());
+    rrtconnect_time_=ros::Duration(ros::Time::now() - start_time).toSec();
+    // HIGHLIGHT("RRT-Connect time " << rrtconnect_time_);
 
     // HIGHLIGHT("Solution \n"<<solution);
     return true;

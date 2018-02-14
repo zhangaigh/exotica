@@ -30,7 +30,7 @@
     </Constraint>
 
     <StartState>0 -0.5657 0 -2.4297 0 3.4346 0.7522</StartState>
-    <JointVelocityLimits>1 1 1 1 1 1 1</JointVelocityLimits>
+    <JointVelocityLimits>0.785 0.785 0.785 0.785 0.785 0.785 0.785</JointVelocityLimits>
     <Goal>1.3313 -0.11345 0.199798 -2.27239 0.0269674 2.16257 2.32059</Goal>
   </TimeIndexedSamplingProblem>
 

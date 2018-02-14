@@ -52,6 +52,7 @@
   <depend>exotica</depend>
   <depend>time_indexed_rrt_connect</depend>
   <depend>ik_solver</depend>
+  <depend>moveit_core</depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

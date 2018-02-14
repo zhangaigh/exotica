@@ -51,7 +51,7 @@ OMPLTimeIndexedRNStateSpace::OMPLTimeIndexedRNStateSpace(TimeIndexedSamplingProb
         bounds.setLow(i, prob->getBounds()[i]);
     }
     getSubspace(0)->as<ompl::base::RealVectorStateSpace>()->setBounds(bounds);
-    addSubspace(ompl::base::StateSpacePtr(new ompl::base::TimeStateSpace), 1.0);
+    addSubspace(ompl::base::StateSpacePtr(new ompl::base::TimeStateSpace), 0.0);
     getSubspace(1)->as<ompl::base::TimeStateSpace>()->setBounds(0, prob_->T);
     lock();
 }
@@ -219,10 +219,15 @@ void TimeIndexedRRTConnect::getPath(Eigen::MatrixXd &traj)
     }
     std::vector<ompl::base::State *> &states = pg.getStates();
     unsigned int length = 0;
-    const int n1 = states.size() - 1;
-    for (int i = 0; i < n1; ++i)
-        length += si->getStateSpace()->validSegmentCount(states[i], states[i + 1]);
-
+    // const int n1 = states.size() - 1;
+    // for (int i = 0; i < n1; ++i)
+    //     length += si->getStateSpace()->validSegmentCount(states[i], states[i + 1]);
+    
+    double tstart, tgoal;
+    Eigen::VectorXd qs,qg;
+    state_space_->as<OMPLTimeIndexedRNStateSpace>()->OMPLToExoticaState(pg.getState(0), qs, tstart);
+    state_space_->as<OMPLTimeIndexedRNStateSpace>()->OMPLToExoticaState(pg.getState(states.size()-1), qg, tgoal);
+    length = (tgoal-tstart)*60;
     pg.interpolate(length);
 
     traj.resize(pg.getStateCount(), init_.AddTimeIntoSolution ? prob_->getSpaceDim() + 1 : prob_->getSpaceDim());
@@ -525,7 +530,7 @@ ompl::base::PlannerStatus OMPLTimeIndexedRRTConnect::solve(const base::PlannerTe
     si_->freeState(rstate);
     delete rmotion;
 
-    // OMPL_INFORM("%s: Created %u states (%u start + %u goal)", getName().c_str(), tStart_->size() + tGoal_->size(), tStart_->size(), tGoal_->size());
+    OMPL_INFORM("%s: Created %u states (%u start + %u goal)", getName().c_str(), tStart_->size() + tGoal_->size(), tStart_->size(), tGoal_->size());
     return solved ? base::PlannerStatus::EXACT_SOLUTION : base::PlannerStatus::TIMEOUT;
 }
 
