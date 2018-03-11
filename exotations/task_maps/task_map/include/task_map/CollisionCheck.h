@@ -53,6 +53,7 @@ public:
     void Initialize();
 
     virtual void update(Eigen::VectorXdRefConst x, Eigen::VectorXdRef phi);
+    virtual void update(Eigen::VectorXdRefConst x, Eigen::VectorXdRef phi, Eigen::MatrixXdRef J);
 
     virtual int taskSpaceDim();
 

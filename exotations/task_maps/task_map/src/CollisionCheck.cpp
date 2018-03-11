@@ -47,6 +47,12 @@ void CollisionCheck::update(Eigen::VectorXdRefConst x, Eigen::VectorXdRef phi)
     phi(0) = cscene_->isStateValid(init_.SelfCollision, init_.SafeDistance) ? -1.0 : 0.0;
 }
 
+void CollisionCheck::update(Eigen::VectorXdRefConst x, Eigen::VectorXdRef phi, Eigen::MatrixXdRef J)
+{
+    update(x, phi);
+    J.setZero();
+}
+
 void CollisionCheck::Instantiate(CollisionCheckInitializer& init)
 {
     init_ = init;
