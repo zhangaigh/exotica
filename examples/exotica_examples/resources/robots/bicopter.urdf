@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<!-- This Bicopter is modelled after the one described in Mansard et al., Using a Memory of Motion to Efficiently Warm-Start a Nonlinear Predictive Controller, ICRA'2018 (https://hal.archives-ouvertes.fr/hal-01591373) -->
+<!-- https://github.com/nmansard/irepa/blob/140aed111a5e1713f970f190934c1c63ea7c578a/python/bicopter.py -->
+<robot name="bicopter">
+    <material name="blue">
+        <color rgba="1 1 .78 1"/>
+    </material>
+    <material name="red">
+        <color rgba="1 0 0 1"/>
+    </material>
+    <material name="grey">
+        <color rgba=".2 .2 .2 1"/>
+    </material>
+    <!-- Add base link; NB: we use cylinder instead of capsule -->
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <cylinder length="0.525" radius="0.05"/>
+            </geometry>
+            <material name="blue"/>
+            <origin rpy="0 -1.57079632679 0" xyz="0 0 0" />
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length="0.525" radius="0.05"/>
+            </geometry>
+            <origin rpy="0 -1.57079632679 0" xyz="0 0 0" />
+        </collision>
+        <!--<inertial>
+            <mass value="2.5"/>
+            <!-/- Iz = 1/2*m*r^2=0.003125, Ixx=1/12*m*(3r^2+h^2)=0.58984375 -/->
+            <inertia ixx="0.58984375" ixy="0.0" ixz="0.0" iyy="0.58984375" iyz="0.0" izz="0.003125"/>
+        </inertial>-->
+    </link>
+    <!-- Add motors -->
+    <link name="motor1">
+        <visual>
+            <geometry>
+                <cylinder length="0.1" radius="0.05"/>
+            </geometry>
+            <material name="red"/>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length="0.1" radius="0.05"/>
+            </geometry>
+        </collision>
+    </link>
+    <link name="motor2">
+        <visual>
+            <geometry>
+                <cylinder length="0.1" radius="0.05"/>
+            </geometry>
+            <material name="red"/>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length="0.1" radius="0.05"/>
+            </geometry>
+        </collision>
+    </link>
+    <!-- Add propellers -->
+    <link name="propeller1">
+        <visual>
+            <geometry>
+                <cylinder length="0.01" radius="0.1667"/>
+            </geometry>
+            <material name="grey"/>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length="0.01" radius="0.1667"/>
+            </geometry>
+        </collision>
+    </link>
+    <link name="propeller2">
+        <visual>
+            <geometry>
+                <cylinder length="0.01" radius="0.1667"/>
+            </geometry>
+            <material name="grey"/>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length="0.01" radius="0.1667"/>
+            </geometry>
+        </collision>
+    </link>
+    <!-- Build everything together -->
+    <joint name="base_to_motor1" type="fixed">
+        <parent link="base_link"/>
+        <child link="motor1"/>
+        <origin rpy="0 0 0" xyz="0.25 0 0.05"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+    <joint name="base_to_motor2" type="fixed">
+        <parent link="base_link"/>
+        <child link="motor2"/>
+        <origin rpy="0 0 0" xyz="-0.25 0 0.05"/>
+        <axis xyz="0 0 1"/>
+    </joint>
+    <joint name="motor1_to_propeller1" type="fixed">
+        <parent link="base_link"/>
+        <child link="propeller1"/>
+        <origin rpy="0 0 0" xyz="0.25 0 0.1"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="25" lower="-2.9" upper="2.9" velocity="2" />
+    </joint>
+    <joint name="motor2_to_propeller2" type="fixed">
+        <parent link="base_link"/>
+        <child link="propeller2"/>
+        <origin rpy="0 0 0" xyz="-0.25 0 0.1"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="25" lower="-2.9" upper="2.9" velocity="2" />
+    </joint>
+</robot>
