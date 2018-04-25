@@ -71,6 +71,7 @@ AddInitializer(
   EndPoseProblem
   BoundedTimeIndexedProblem
   BoundedEndPoseProblem
+  BicopterDynamicProblem
 )
 GenInitializers()
 
@@ -116,6 +117,7 @@ add_library(${PROJECT_NAME}
   src/Problems/BoundedEndPoseProblem.cpp
   src/Problems/SamplingProblem.cpp
   src/Problems/TimeIndexedSamplingProblem.cpp
+  src/Problems/BicopterDynamicProblem.cpp
   ${exotica_BINARY_DIR}/generated/Version.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 

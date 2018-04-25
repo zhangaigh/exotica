@@ -1,0 +1,4 @@
+extend <exotica/PlanningProblem>
+Optional Eigen::VectorXd FloatingBaseLowerLimits = Eigen::VectorXd();
+Optional Eigen::VectorXd FloatingBaseUpperLimits = Eigen::VectorXd();
+Optional std::vector<exotica::Initializer> Cost = std::vector<exotica::Initializer>();

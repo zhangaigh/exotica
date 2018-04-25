@@ -1,0 +1,136 @@
+/*
+ *      Author: Wolfgang Merkt
+ *
+ * Copyright (c) 2018, Wolfgang Merkt
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  * Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *  * Neither the name of  nor the names of its contributors may be used to
+ *    endorse or promote products derived from this software without specific
+ *    prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+#include <exotica/Problems/BicopterDynamicProblem.h>
+#include <exotica/Setup.h>
+
+#include <kdl/tree.hpp>
+
+REGISTER_PROBLEM_TYPE("BicopterDynamicProblem", exotica::BicopterDynamicProblem)
+
+namespace exotica
+{
+BicopterDynamicProblem::BicopterDynamicProblem()
+{
+    Flags = KIN_FK;
+}
+
+BicopterDynamicProblem::~BicopterDynamicProblem()
+{
+    // TODO Auto-generated destructor stub
+}
+
+// std::vector<double>& BicopterDynamicProblem::getBounds()
+// {
+//     return bounds_;
+// }
+
+void BicopterDynamicProblem::Instantiate(BicopterDynamicProblemInitializer& init)
+{
+    Parameters = init;
+
+    // if (init.LocalPlannerConfig != "")
+    // {
+    //     local_planner_config_ = init.LocalPlannerConfig;
+    // }
+
+    // goal_ = init.Goal;
+
+    // if (scene_->getBaseType() != exotica::BASE_TYPE::FIXED)
+    //     compound_ = true;
+    // else
+    //     compound_ = false;
+    // std::vector<std::string> jnts;
+    // scene_->getJointNames(jnts);
+
+    // bounds_.resize(jnts.size() * 2);
+    // std::map<std::string, std::vector<double>> joint_limits = scene_->getSolver().getUsedJointLimits();
+    // for (int i = 0; i < jnts.size(); i++)
+    // {
+    //     bounds_[i] = joint_limits.at(jnts[i])[0];
+    //     bounds_[i + jnts.size()] = joint_limits.at(jnts[i])[1];
+    // }
+
+    NumTasks = Tasks.size();
+    PhiN = 0;
+    JN = 0;
+    for (int i = 0; i < NumTasks; i++)
+    {
+        appendVector(Phi.map, Tasks[i]->getLieGroupIndices());
+        PhiN += Tasks[i]->Length;
+        JN += Tasks[i]->LengthJ;
+    }
+    Phi.setZero(PhiN);
+    TaskSpaceVector dummy;
+    Cost.initialize(init.Cost, shared_from_this(), dummy);
+    applyStartState(false);
+    preupdate();
+}
+
+void BicopterDynamicProblem::preupdate()
+{
+    PlanningProblem::preupdate();
+    for (int i = 0; i < Tasks.size(); i++) Tasks[i]->isUsed = false;
+    Cost.updateS();
+}
+
+// void BicopterDynamicProblem::setGoalState(Eigen::VectorXdRefConst qT)
+// {
+//     if (qT.rows() != N)
+//         throw_pretty("Dimensionality of goal state wrong: Got " << qT.rows() << ", expected " << N);
+//     goal_ = qT;
+// }
+
+// bool BicopterDynamicProblem::isValid(Eigen::VectorXdRefConst x)
+// {
+//     scene_->Update(x);
+//     for (int i = 0; i < NumTasks; i++)
+//     {
+//         if (Tasks[i]->isUsed)
+//             Tasks[i]->update(x, Phi.data.segment(Tasks[i]->Start, Tasks[i]->Length));
+//     }
+//     Cost.update(Phi);
+//     numberOfProblemUpdates++;
+//     return ((Cost.S * Cost.ydiff).array() < 0.0).all();
+// }
+
+void BicopterDynamicProblem::Update(Eigen::VectorXdRefConst x)
+{
+    // isValid(x);
+}
+
+int BicopterDynamicProblem::getSpaceDim()
+{
+    return N;
+}
+
+} /* namespace exotica */
