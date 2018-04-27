@@ -10,6 +10,12 @@ solver = exo.Setup.loadSolver('{exotica_examples}/resources/configs/ompl_solver_
 
 solution = solver.solve()
 
-plot(solution)
+t=exo.Timer()
+for i in range(1000):
+    solver.getProblem().update(solution[i%len(solution)])
+dt=t.getDuration()
+print(dt)
 
-publishTrajectory(solution, 3.0, solver.getProblem())
+#plot(solution)
+
+#publishTrajectory(solution, 3.0, problem)
